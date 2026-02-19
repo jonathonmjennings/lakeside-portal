@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lakeside Fulfillment — Client Portal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060e1a;--bg2:#0a1628;--card:#0d1f35;--card2:#112840;--bdr:#1a3a5f;--txt:#c8d6e5;--txt2:#8899aa;--wht:#f0f4f8;--acc:#00d4aa;--acc2:#1e88e5;--amb:#c7a44a;--red:#ef5350;--grn:#4caf50;--org:#ff9800}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt)}
+
+/* === LAYOUT === */
+.ly{display:flex;height:100vh}
+.sb{width:220px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.mn{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.hd{padding:20px 32px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;background:var(--bg2);position:sticky;top:0;z-index:10}
+.ct{padding:28px 32px;flex:1}
+
+/* === SIDEBAR === */
+.lg{padding:20px 20px 8px;display:flex;align-items:center;gap:10px}
+.lt{font-size:18px;font-weight:700;color:var(--wht);letter-spacing:-.5px}
+.ls{font-size:9px;color:var(--acc);text-transform:uppercase;letter-spacing:2px;padding:0 20px 20px}
+.ns{padding:8px 12px 4px;font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 20px;color:var(--txt2);cursor:pointer;transition:all .2s;font-size:13px;font-weight:500;border-left:3px solid transparent;user-select:none}
+.ni:hover{color:var(--wht);background:rgba(255,255,255,.03)}
+.ni.on{color:var(--wht);background:rgba(30,136,229,.12);border-left-color:var(--acc2)}
+.ic{font-size:15px;width:20px;text-align:center}
+.sf{margin-top:auto;padding:16px 20px;border-top:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--bg)}
+.un{font-size:12px;font-weight:600;color:var(--wht)}
+.ur{font-size:10px;color:var(--txt2)}
+
+/* === HEADER === */
+.pt{font-size:20px;font-weight:700;color:var(--wht)}
+.ps{font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:6px;margin-top:2px}
+.ps::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--grn)}
+.ha{display:flex;gap:10px;align-items:center}
+.pd{background:var(--card);border:1px solid var(--bdr);color:var(--wht);padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.bt{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.bo{background:transparent;border:1px solid var(--bdr);color:var(--txt)}
+.bo:hover{border-color:var(--acc2);color:var(--wht)}
+.ba{background:var(--acc);color:var(--bg)}
+
+/* === KPI CARDS === */
+.kr{display:grid;gap:16px;margin-bottom:24px}
+.k4{grid-template-columns:repeat(4,1fr)}.k3{grid-template-columns:repeat(3,1fr)}
+.kp{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:20px 22px;position:relative;overflow:hidden}
+.kp::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kp.gn::before{background:var(--grn)}.kp.bl::before{background:var(--acc2)}.kp.am::before{background:var(--amb)}.kp.rd::before{background:var(--red)}.kp.ac::before{background:var(--acc)}
+.kl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);font-weight:600;margin-bottom:8px}
+.kv{font-size:28px;font-weight:800;color:var(--wht);letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.ks{font-size:11px;margin-top:4px}
+.ks.up{color:var(--grn)}.ks.dn{color:var(--red)}.ks.nu{color:var(--txt2)}
+.ki{position:absolute;top:16px;right:18px;font-size:18px;opacity:.4}
+
+/* === PANELS === */
+.pn{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:22px 24px;margin-bottom:20px}
+.pnt{font-size:14px;font-weight:700;color:var(--wht);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.pnt::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+/* === SUMMARY === */
+.sm{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bdr);border-radius:10px;padding:18px 24px;margin-bottom:24px;display:flex;align-items:center;gap:14px;font-size:13px;line-height:1.6}
+.sm strong{color:var(--wht)}
+.hl{color:var(--acc);font-weight:700}.wn{color:var(--red);font-weight:700}
+
+/* === TABLES === */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bdr)}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(26,58,95,.3)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.mo{font-family:'SF Mono','Cascadia Code',monospace;font-size:12px}
+.st{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.st.gn{background:rgba(76,175,80,.15);color:#4caf50}.st.am{background:rgba(255,152,0,.15);color:#ff9800}
+
+/* === BAR CHARTS === */
+.br{display:flex;align-items:center;gap:12px;padding:6px 0}
+.bl2{width:120px;font-size:12px;color:var(--txt);flex-shrink:0}
+.bt2{flex:1;height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;transition:width .6s}
+.bv{width:80px;text-align:right;font-size:12px;font-weight:600;color:var(--wht)}
+
+/* === UTILITY CARDS === */
+.uc{background:linear-gradient(135deg,rgba(30,136,229,.1),rgba(0,212,170,.05));border:1px solid rgba(30,136,229,.2);border-radius:10px;padding:20px;text-align:center}
+.ul{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);font-weight:600}
+.uv{font-size:32px;font-weight:800;color:var(--acc);margin:6px 0}
+.up2{font-size:11px;color:var(--acc2)}
+
+/* === ACCOUNT ROWS === */
+.ar{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(26,58,95,.3)}
+.ar:last-child{border:none}
+.ak{font-size:12px;color:var(--txt2)}.av2{font-size:13px;font-weight:600;color:var(--wht)}
+
+/* === AMOUNT DUE === */
+.ad{background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.3);border-radius:8px;padding:14px 20px;text-align:center}
+.adl{font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.adv{font-size:28px;font-weight:800;color:var(--red);margin-top:4px}
+
+/* === PAGES === */
+.pg{display:none}.pg.on{display:block}
+
+/* === LOGIN === */
+.lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000}
+.lb{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:40px;width:380px;text-align:center}
+.lb h2{color:var(--wht);font-size:20px;margin-bottom:4px}
+.lb p{color:var(--txt2);font-size:13px;margin-bottom:24px}
+.li{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;color:var(--wht);font-size:13px;margin-bottom:12px;outline:none;font-family:inherit}
+.li:focus{border-color:var(--acc2)}
+.lbn{width:100%;padding:11px;background:var(--acc2);color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.lbn:hover{background:#1976d2}
+.le{color:var(--red);font-size:12px;margin-top:8px;display:none}
+
+/* === LIVE INDICATOR === */
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--grn);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){.sb{display:none}.ct{padding:16px}.k4,.k3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.hd{padding:14px 16px}}
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div class="lo" id="lkLo">
+<div class="lb">
+<h2>🌊 Lakeside Fulfillment</h2>
+<p>Admin Portal — Austin, TX</p>
+<input class="li" id="lkEm" placeholder="Email" autocomplete="email">
+<input class="li" id="lkPw" type="password" placeholder="Password" autocomplete="current-password">
+<button class="lbn" id="lkLb">Sign In</button>
+<div class="le" id="lkLe">Invalid credentials</div>
+</div>
+</div>
+
+<!-- ========== APP ========== -->
+<div class="ly" id="lkAp" style="display:none">
+
+<!-- SIDEBAR -->
+<div class="sb">
+<div class="lg"><div class="lt">🌊 Lakeside</div></div>
+<div class="ls">Admin Portal</div>
+<div class="ns">Operations</div>
+<div class="ni on" data-p="dashboard"><span class="ic">📊</span>Dashboard</div>
+<div class="ni" data-p="account"><span class="ic">👤</span>Account</div>
+<div class="ni" data-p="orders"><span class="ic">📦</span>Orders</div>
+<div class="ni" data-p="inventory"><span class="ic">🏷️</span>Inventory</div>
+<div class="ns">Financial</div>
+<div class="ni" data-p="billing"><span class="ic">💰</span>Billing</div>
+<div class="ni" data-p="payments"><span class="ic">💳</span>Payments</div>
+<div class="ns">Fulfillment</div>
+<div class="ni" data-p="products"><span class="ic">📋</span>Products</div>
+<div class="ni" data-p="inbound"><span class="ic">📥</span>Inbound</div>
+<div class="ns">System</div>
+<div class="ni" data-p="settings"><span class="ic">⚙️</span>Settings</div>
+<div class="sf"><div class="av">NS</div><div><div class="un">Nick Sala</div><div class="ur">Admin</div></div></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="mn">
+<div class="hd">
+<div>
+<div class="pt" id="lkPt">Operations Dashboard</div>
+<div class="ps"><span class="live-dot"></span> Lakeside Fulfillment | Austin, TX — <span id="v-lastSync" style="color:var(--acc)">connecting...</span></div>
+</div>
+<div class="ha">
+<select class="pd" id="lkPd">
+<option value="today">Today</option>
+<option value="week" selected>This Week</option>
+<option value="month">This Month</option>
+<option value="year">This Year</option>
+<option value="all">All Time</option>
+</select>
+<button class="bt bo" id="lkRf">↻ Refresh</button>
+</div>
+</div>
+<div class="ct">
+
+<!-- ===== DASHBOARD ===== -->
+<div class="pg on" id="pg-dashboard">
+<div class="sm">
+<div style="font-size:28px">🚀</div>
+<div>Client: <strong>Monty Sups (Hunter)</strong> — <span class="hl" id="v-sum-orders">--</span> total orders fulfilled. Currently tracking <strong>3 active SKUs</strong> across Shopify &amp; Amazon channels. Rate: <span class="hl">$1.00/unit</span>, Box fee: <span class="hl">$0.36</span> (qty ≥3). Amount due: <span class="wn" id="v-sum-due">--</span></div>
+</div>
+
+<div class="kr k4">
+<div class="kp gn"><div class="kl">Total Orders</div><div class="kv" id="v-d-orders">--</div><div class="ks nu" id="v-d-orders-sub">--</div><div class="ki">📦</div></div>
+<div class="kp bl"><div class="kl">Units Shipped</div><div class="kv" id="v-d-units">--</div><div class="ks nu">lifetime</div><div class="ki">🚚</div></div>
+<div class="kp am"><div class="kl">Total Charges</div><div class="kv" id="v-d-revenue">--</div><div class="ks nu">all time</div><div class="ki">💰</div></div>
+<div class="kp rd"><div class="kl">Amount Due</div><div class="kv" id="v-d-due">--</div><div class="ks dn">outstanding</div><div class="ki">⚠️</div></div>
+</div>
+
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Units On Hand</div><div class="kv" id="v-d-onhand">--</div><div class="ks nu">across 3 SKUs</div></div>
+<div class="kp bl"><div class="kl">Avg Units/Order</div><div class="kv" id="v-d-avg">--</div><div class="ks nu">lifetime avg</div></div>
+<div class="kp ac"><div class="kl">Payments Received</div><div class="kv" id="v-d-paid">--</div><div class="ks up">collected</div></div>
+</div>
+
+<div class="g2">
+<div class="pn"><div class="pnt">Top Products by Volume</div>
+<div class="br"><div class="bl2">Kids Toxin Detox</div><div class="bt2"><div class="bf" id="v-bar-kids-fill" style="width:75%;background:linear-gradient(90deg,#00d4aa,#1e88e5)"></div></div><div class="bv" id="v-bar-kids">--</div></div>
+<div class="br"><div class="bl2">BREATHEASE</div><div class="bt2"><div class="bf" id="v-bar-breath-fill" style="width:20%;background:linear-gradient(90deg,#4caf50,#00d4aa)"></div></div><div class="bv" id="v-bar-breath">--</div></div>
+<div class="br"><div class="bl2">TOXIN STRAW LEM</div><div class="bt2"><div class="bf" id="v-bar-toxin-fill" style="width:12%;background:linear-gradient(90deg,#c7a44a,#ff9800)"></div></div><div class="bv" id="v-bar-toxin">--</div></div>
+</div>
+<div class="pn"><div class="pnt">Channel Breakdown</div>
+<div class="br"><div class="bl2">🟢 Shopify</div><div class="bt2"><div class="bf" style="width:64%;background:#4caf50"></div></div><div class="bv">64%</div></div>
+<div class="br"><div class="bl2">🔴 TikTok Shop</div><div class="bt2"><div class="bf" style="width:24%;background:#ef5350"></div></div><div class="bv">24%</div></div>
+<div class="br"><div class="bl2">🟠 Amazon</div><div class="bt2"><div class="bf" style="width:12%;background:#ff9800"></div></div><div class="bv">12%</div></div>
+</div>
+</div>
+
+<div class="pn"><div class="pnt">Inventory Health</div>
+<div class="kr k3" style="margin:0">
+<div class="uc"><div class="ul">BREATHEASE</div><div class="uv" id="v-ih-breath" style="color:#4caf50">--</div><div class="up2">On Hand | Reorder: 250</div><div class="up2" id="v-ih-breath-s">--</div></div>
+<div class="uc"><div class="ul">TOXIN STRAW LEM</div><div class="uv" id="v-ih-toxin" style="color:#c7a44a">--</div><div class="up2">On Hand | Reorder: 250</div><div class="up2" id="v-ih-toxin-s">--</div></div>
+<div class="uc"><div class="ul">Kids Toxin Detox</div><div class="uv" id="v-ih-kids" style="color:#4caf50">--</div><div class="up2">On Hand | Reorder: 3,000</div><div class="up2" id="v-ih-kids-s">--</div></div>
+</div></div>
+
+<div class="pn"><div class="pnt">Box Usage (Kids Toxin Detox)</div>
+<div class="kr k3" style="margin:0">
+<div class="kp bl"><div class="kl">Boxes Used (All Time)</div><div class="kv" style="font-size:22px" id="v-d-boxused">--</div></div>
+<div class="kp rd"><div class="kl">Boxes Left</div><div class="kv" style="font-size:22px;color:#ef5350" id="v-d-boxleft">--</div><div class="ks dn">needs restock</div></div>
+<div class="kp am"><div class="kl">Last 7 Days Used</div><div class="kv" style="font-size:22px" id="v-d-box7">--</div><div class="ks nu" id="v-d-box30">--</div></div>
+</div></div>
+</div>
+
+<!-- ===== ACCOUNT ===== -->
+<div class="pg" id="pg-account">
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Client Name</div><div class="kv" style="font-size:22px">Hunter</div><div class="ks nu">Monty Sups</div></div>
+<div class="kp bl"><div class="kl">Rate Per Unit</div><div class="kv">$1.00</div><div class="ks nu">box fee $0.36 (qty≥3)</div></div>
+<div class="kp am"><div class="kl">SKUs</div><div class="kv">3</div><div class="ks nu">BREATHEASE, TOXIN STRAW, Kids Toxin</div></div>
+</div>
+<div class="g2"><div>
+<div class="pn"><div class="pnt">Lifetime Stats</div>
+<div class="ar"><div class="ak">Total Units Received</div><div class="av2" id="v-a-received">--</div></div>
+<div class="ar"><div class="ak">Units Shipped (lifetime)</div><div class="av2" id="v-a-shipped">--</div></div>
+<div class="ar"><div class="ak">Adjustments (net)</div><div class="av2" id="v-a-adjust">--</div></div>
+<div class="ar"><div class="ak">Units On Hand</div><div class="av2" id="v-a-onhand">--</div></div>
+<div class="ar"><div class="ak">Total Orders</div><div class="av2" id="v-a-orders">--</div></div>
+<div class="ar"><div class="ak">Avg Units per Order</div><div class="av2" id="v-a-avg">--</div></div>
+<div class="ar"><div class="ak">Largest Order</div><div class="av2">9 units</div></div>
+</div></div><div>
+<div class="ad" style="margin-bottom:16px"><div class="adl">Amount Owed</div><div class="adv" id="v-a-due">--</div></div>
+<div class="pn"><div class="pnt">Billing Summary</div>
+<div class="ar"><div class="ak">Total Charges</div><div class="av2" id="v-a-charges">--</div></div>
+<div class="ar"><div class="ak">Payments Received</div><div class="av2" id="v-a-paid">--</div></div>
+<div class="ar"><div class="ak">Adjustments (credits)</div><div class="av2" id="v-a-credits">--</div></div>
+<div class="ar"><div class="ak">Last Payment Date</div><div class="av2">2/10/2026</div></div>
+<div class="ar"><div class="ak">Last Payment Amount</div><div class="av2">$1,234.32</div></div>
+</div></div></div>
+</div>
+
+<!-- ===== ORDERS ===== -->
+<div class="pg" id="pg-orders">
+<div class="kr k4">
+<div class="kp gn"><div class="kl">Total Orders</div><div class="kv" id="v-o-total">--</div></div>
+<div class="kp bl"><div class="kl">This Month</div><div class="kv" id="v-o-month">--</div></div>
+<div class="kp am"><div class="kl">This Month Charges</div><div class="kv" id="v-o-charges">--</div></div>
+<div class="kp ac"><div class="kl">Avg Qty/Order</div><div class="kv" id="v-o-avg">--</div></div>
+</div>
+<div class="pn"><div class="pnt">Recent Orders</div>
+<table><thead><tr><th>Date</th><th>Order ID</th><th>SKU</th><th>Qty</th><th>Channel</th><th>Rate</th><th>Total Charge</th><th>Misc Cost</th><th>Grand Total</th><th>Prep Type</th></tr></thead>
+<tbody id="v-ordersBody"><tr><td colspan="10" style="text-align:center;padding:20px;opacity:.5">Loading live orders...</td></tr></tbody>
+</table></div>
+</div>
+
+<!-- ===== INVENTORY ===== -->
+<div class="pg" id="pg-inventory">
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Total SKUs</div><div class="kv">3</div><div class="ks nu">active products</div></div>
+<div class="kp bl"><div class="kl">Total On Hand</div><div class="kv" id="v-i-onhand">--</div><div class="ks nu">across all SKUs</div></div>
+<div class="kp rd"><div class="kl">Below Reorder</div><div class="kv">0</div><div class="ks up">all stocked</div></div>
+</div>
+<div class="pn"><div class="pnt">Stock Levels</div>
+<table><thead><tr><th>SKU</th><th>Title</th><th>Total In</th><th>Total Out</th><th>On Hand</th><th>Reorder</th><th>Below?</th><th>Last 7d</th><th>Last 30d</th></tr></thead><tbody>
+<tr><td class="mo">BREATHEASE</td><td>BE</td><td>3,631</td><td>3,006</td><td style="color:#4caf50;font-weight:700" id="v-it-breath">--</td><td>250</td><td><span class="st gn">NO</span></td><td>127</td><td>572</td></tr>
+<tr><td class="mo">TOXIN STRAWBERRY LEM</td><td>TDS</td><td>3,225</td><td>2,835</td><td style="color:#c7a44a;font-weight:700" id="v-it-toxin">--</td><td>250</td><td><span class="st gn">NO</span></td><td>98</td><td>624</td></tr>
+<tr><td class="mo">Kids Toxin Detox</td><td>TDK</td><td>16,377</td><td>11,975</td><td style="color:#4caf50;font-weight:700" id="v-it-kids">--</td><td>3,000</td><td><span class="st gn">NO</span></td><td>792</td><td>4,030</td></tr>
+</tbody></table></div>
+<div class="pn"><div class="pnt">Days of Supply Estimate</div>
+<div class="kr k3" style="margin:0">
+<div class="uc"><div class="ul">BREATHEASE</div><div class="uv" id="v-dos-breath">--</div><div class="up2" id="v-dos-breath-c">--</div></div>
+<div class="uc"><div class="ul">TOXIN STRAW LEM</div><div class="uv" id="v-dos-toxin">--</div><div class="up2" id="v-dos-toxin-c">--</div></div>
+<div class="uc"><div class="ul">Kids Toxin Detox</div><div class="uv" id="v-dos-kids">--</div><div class="up2" id="v-dos-kids-c">--</div></div>
+</div></div>
+</div>
+
+<!-- ===== BILLING ===== -->
+<div class="pg" id="pg-billing">
+<div class="kr k4">
+<div class="kp gn"><div class="kl">Total Charges</div><div class="kv" id="v-b-total">--</div></div>
+<div class="kp bl"><div class="kl">Order Charges</div><div class="kv" id="v-b-order">--</div><div class="ks nu">Amazon: $0.00</div></div>
+<div class="kp am"><div class="kl">Adjustments</div><div class="kv" id="v-b-adjust">--</div><div class="ks nu">credits</div></div>
+<div class="kp rd"><div class="kl">Amount Due</div><div class="kv" style="color:#ef5350" id="v-b-due">--</div><div class="ks dn">outstanding</div></div>
+</div>
+<div class="g2">
+<div class="pn"><div class="pnt">Charge Breakdown</div>
+<div class="ar"><div class="ak">Total Units Billed</div><div class="av2" id="v-b-unitsbilled">--</div></div>
+<div class="ar"><div class="ak">Order Charges</div><div class="av2" id="v-b-ordercharges">--</div></div>
+<div class="ar"><div class="ak">Amazon Charges</div><div class="av2">$0.00</div></div>
+<div class="ar"><div class="ak">Total Charges</div><div class="av2" style="color:#c7a44a" id="v-b-totalcharges">--</div></div>
+<div class="ar"><div class="ak">Adjustments (credits)</div><div class="av2" id="v-b-adjustcredits">--</div></div>
+</div><div>
+<div class="ad" style="margin-bottom:16px"><div class="adl">Amount Owed</div><div class="adv" id="v-b-owed">--</div></div>
+<div class="pn"><div class="pnt">Rate Card</div>
+<div class="ar"><div class="ak">Pick and Pack (per unit)</div><div class="av2">$1.00</div></div>
+<div class="ar"><div class="ak">Box Fee (qty 3+)</div><div class="av2">$0.36</div></div>
+<div class="ar"><div class="ak">Amazon FBA Prep</div><div class="av2">$0.00</div></div>
+</div></div></div>
+</div>
+
+<!-- ===== PAYMENTS ===== -->
+<div class="pg" id="pg-payments">
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Total Paid</div><div class="kv" id="v-p-total">--</div><div class="ks up">11 payments</div></div>
+<div class="kp bl"><div class="kl">Last Payment</div><div class="kv" style="font-size:22px">$1,234.32</div><div class="ks nu">2/10/2026 via Zelle</div></div>
+<div class="kp rd"><div class="kl">Remaining Balance</div><div class="kv" style="color:#ef5350" id="v-p-remain">--</div></div>
+</div>
+<div class="pn"><div class="pnt">Payment History</div>
+<table><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Notes</th></tr></thead><tbody>
+<tr><td>2/10/2026</td><td style="color:#4caf50;font-weight:600">$1,234.32</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>1/29/2026</td><td style="color:#4caf50;font-weight:600">$2,191.18</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>1/17/2026</td><td style="color:#4caf50;font-weight:600">$1,350.23</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>1/11/2026</td><td style="color:#4caf50;font-weight:600">$2,404.32</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>12/22/2025</td><td style="color:#4caf50;font-weight:600">$791.72</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>12/11/2025</td><td style="color:#4caf50;font-weight:600">$556.60</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>12/3/2025</td><td style="color:#4caf50;font-weight:600">$630.04</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>11/25/2025</td><td style="color:#4caf50;font-weight:600">$444.80</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>11/12/2025</td><td style="color:#4caf50;font-weight:600">$367.88</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>10/30/2025</td><td style="color:#4caf50;font-weight:600">$577.20</td><td>Zelle</td><td>PAID VIA ZELLE</td></tr>
+<tr><td>10/16/2025</td><td style="color:#4caf50;font-weight:600">$406.08</td><td>Zelle</td><td>PAID VIA ZELLE — orders up to line 438</td></tr>
+</tbody></table></div>
+</div>
+
+<!-- ===== PRODUCTS ===== -->
+<div class="pg" id="pg-products">
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Active SKUs</div><div class="kv">3</div></div>
+<div class="kp bl"><div class="kl">Total Units Received</div><div class="kv" id="v-pr-received">--</div></div>
+<div class="kp am"><div class="kl">Avg Reorder Point</div><div class="kv">1,167</div></div>
+</div>
+<div class="pn"><div class="pnt">Product Master</div>
+<table><thead><tr><th>SKU</th><th>Title</th><th>Reorder</th><th>Stock</th><th>Status</th><th>Notes</th></tr></thead><tbody>
+<tr><td class="mo" style="font-weight:600">BREATHEASE</td><td>BE</td><td>250</td><td id="v-prod-breath">--</td><td><span class="st gn">Stocked</span></td><td></td></tr>
+<tr><td class="mo" style="font-weight:600">TOXIN STRAWBERRY LEM</td><td>TDS</td><td>250</td><td id="v-prod-toxin">--</td><td><span class="st am">Monitor</span></td><td id="v-prod-toxin-note">--</td></tr>
+<tr><td class="mo" style="font-weight:600">Kids Toxin Detox</td><td>TDK</td><td>3,000</td><td id="v-prod-kids">--</td><td><span class="st gn">Stocked</span></td><td>Highest volume SKU</td></tr>
+</tbody></table></div>
+</div>
+
+<!-- ===== INBOUND ===== -->
+<div class="pg" id="pg-inbound">
+<div class="kr k3">
+<div class="kp gn"><div class="kl">Total Shipments</div><div class="kv">16</div></div>
+<div class="kp bl"><div class="kl">Total Units Inbound</div><div class="kv" id="v-in-total">--</div></div>
+<div class="kp am"><div class="kl">Latest Inbound</div><div class="kv" style="font-size:18px">1/26/2025</div></div>
+</div>
+<div class="pn"><div class="pnt">Inbound Receiving Log</div>
+<table><thead><tr><th>Date</th><th>SKU</th><th>Qty In</th><th>PO / Tracking</th><th>Notes</th></tr></thead><tbody>
+<tr><td>1/26/2025</td><td class="mo">Kids Toxin Detox</td><td style="font-weight:600">10,170</td><td>—</td><td>113 boxes 90 each</td></tr>
+<tr><td>1/3/2026</td><td class="mo">Kids Toxin Detox</td><td style="font-weight:600">3,150</td><td>—</td><td>35 boxes 90 each</td></tr>
+<tr><td>12/22/2025</td><td class="mo">Kids Toxin Detox</td><td>104</td><td>—</td><td>—</td></tr>
+<tr><td>—</td><td class="mo">TOXIN STRAWBERRY LEM</td><td>2,040</td><td>—</td><td>—</td></tr>
+<tr><td>—</td><td class="mo">Kids Toxin Detox</td><td>2,070</td><td>—</td><td>—</td></tr>
+<tr><td>10/14/2025</td><td class="mo">TOXIN STRAWBERRY LEM</td><td>360</td><td>—</td><td>—</td></tr>
+<tr><td>10/14/2025</td><td class="mo">BREATHEASE</td><td>1,022</td><td>—</td><td>—</td></tr>
+<tr><td>10/7/2025</td><td class="mo">BREATHEASE</td><td>2,250</td><td>—</td><td>—</td></tr>
+<tr><td>—</td><td class="mo">Kids Toxin Detox</td><td>883</td><td>—</td><td>—</td></tr>
+<tr><td>—</td><td class="mo">TOXIN STRAWBERRY LEM</td><td>804</td><td>—</td><td>—</td></tr>
+<tr><td>10/2/2025</td><td class="mo">BREATHEASE</td><td>356</td><td>—</td><td>—</td></tr>
+<tr><td>8/20/2025</td><td class="mo">TOXIN STRAWBERRY LEM</td><td>19</td><td>—</td><td>—</td></tr>
+<tr><td>8/20/2025</td><td class="mo">TOXIN WHITE PEACH</td><td>88</td><td>—</td><td>—</td></tr>
+</tbody></table></div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<div class="pg" id="pg-settings">
+<div class="g2">
+<div class="pn"><div class="pnt">⚙️ Company</div>
+<div class="ar"><div class="ak">Name</div><div class="av2">Lakeside Fulfillment</div></div>
+<div class="ar"><div class="ak">Location</div><div class="av2">Austin, TX</div></div>
+<div class="ar"><div class="ak">Owner</div><div class="av2">Nick Sala</div></div>
+<div class="ar"><div class="ak">Client</div><div class="av2">Hunter (Monty Sups)</div></div>
+</div>
+<div class="pn"><div class="pnt">💰 Rate Card</div>
+<div class="ar"><div class="ak">Rate Per Unit</div><div class="av2">$1.00</div></div>
+<div class="ar"><div class="ak">Box Fee (qty 3+)</div><div class="av2">$0.36</div></div>
+</div>
+<div class="pn"><div class="pnt">🔗 Data Sources</div>
+<div class="ar"><div class="ak">Google Sheet</div><div class="av2" style="color:#4caf50">Connected via CSV</div></div>
+<div class="ar"><div class="ak">GHL CRM</div><div class="av2" style="color:#4caf50">Active</div></div>
+<div class="ar"><div class="ak">Last Sync</div><div class="av2" style="color:#00d4aa" id="v-lastSync2">—</div></div>
+</div>
+<div class="pn"><div class="pnt">🔌 Integrations</div>
+<div class="ar"><div class="ak">Shopify</div><div class="av2" style="color:#4caf50">Connected</div></div>
+<div class="ar"><div class="ak">Amazon SP-API</div><div class="av2" style="color:#4caf50">Connected</div></div>
+<div class="ar"><div class="ak">ShipStation</div><div class="av2" style="color:#c7a44a">Pending</div></div>
+</div>
+</div>
+</div>
+
+</div><!-- end ct -->
+</div><!-- end mn -->
+</div><!-- end ly -->
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+(function(){
+  // CONFIG
+  var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6J6k1mNgNeyCPtP-f30ARDrGVNUEBc-vLhhNSORj1lqT-G-k69ixZS58teHi6czLEJxJiyuiQWmHa/pub?gid=1158528977&single=true&output=csv';
+  var POLL_MS = 3000;
+
+  // STATE
+  var D = {};
+  var period = 'week';
+  var timer = null;
+
+  var TITLES = {
+    dashboard: 'Operations Dashboard',
+    account: 'Client Account — Monty Sups',
+    orders: 'Order Management',
+    inventory: 'Inventory Overview',
+    billing: 'Billing & Charges',
+    payments: 'Payment History',
+    products: 'Product Catalog',
+    inbound: 'Inbound Receiving',
+    settings: 'Settings'
+  };
+
+  // ===== LOGIN =====
+  document.getElementById('lkLb').onclick = doLogin;
+  document.getElementById('lkEm').onkeydown = function(e){ if(e.key === 'Enter') doLogin(); };
+  document.getElementById('lkPw').onkeydown = function(e){ if(e.key === 'Enter') doLogin(); };
+
+  function doLogin(){
+    var e = (document.getElementById('lkEm').value || '').trim().toLowerCase();
+    var p = document.getElementById('lkPw').value || '';
+    if((e === 'sala@lakeside.com' && p === 'sala2026') || (e === 'demo@lakeside.com' && p === 'demo2026')){
+      document.getElementById('lkLo').style.display = 'none';
+      document.getElementById('lkAp').style.display = 'flex';
+      startPolling();
+    } else {
+      document.getElementById('lkLe').style.display = 'block';
+    }
+  }
+
+  // ===== NAVIGATION =====
+  var navItems = document.querySelectorAll('.ni');
+  for(var i = 0; i < navItems.length; i++){
+    navItems[i].onclick = (function(el){
+      return function(){ setPage(el.getAttribute('data-p')); };
+    })(navItems[i]);
+  }
+
+  function setPage(pg){
+    // Update nav
+    var navs = document.querySelectorAll('.ni');
+    for(var j = 0; j < navs.length; j++) navs[j].className = 'ni';
+    var active = document.querySelector('.ni[data-p="' + pg + '"]');
+    if(active) active.className = 'ni on';
+
+    // Update pages
+    var pages = document.querySelectorAll('.pg');
+    for(var k = 0; k < pages.length; k++) pages[k].className = 'pg';
+    var target = document.getElementById('pg-' + pg);
+    if(target) target.className = 'pg on';
+
+    // Update title
+    sv('lkPt', TITLES[pg] || pg);
+  }
+
+  // ===== PERIOD SELECTOR =====
+  document.getElementById('lkPd').onchange = function(){
+    period = this.value;
+    updateUI();
+  };
+
+  // ===== REFRESH =====
+  document.getElementById('lkRf').onclick = function(){ fetchData(); };
+
+  // ===== DATA POLLING =====
+  function startPolling(){
+    fetchData();
+    if(timer) clearInterval(timer);
+    timer = setInterval(fetchData, POLL_MS);
+  }
+
+  function fetchData(){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', CSV_URL + '&_t=' + Date.now(), true);
+    xhr.onload = function(){
+      if(xhr.status === 200){
+        parseCSV(xhr.responseText);
+        updateUI();
+        var now = new Date().toLocaleTimeString();
+        sv('v-lastSync', 'Live — ' + now);
+        sv('v-lastSync2', now);
+      }
+    };
+    xhr.onerror = function(){
+      sv('v-lastSync', 'Connection error — retrying...');
+    };
+    xhr.send();
+  }
+
+  function parseCSV(text){
+    var lines = text.trim().split('\n');
+    for(var i = 1; i < lines.length; i++){
+      var parts = lines[i].split(',');
+      if(parts.length >= 2){
+        var key = parts[0].trim().replace(/"/g, '');
+        var val = parts[1].trim().replace(/"/g, '').replace(/[\$,]/g, '');
+        D[key] = parseFloat(val) || 0;
+      }
+    }
+  }
+
+  // ===== UPDATE ALL UI =====
+  function updateUI(){
+    if(!D.orders_alltime) return;
+
+    var orders, revenue, units;
+    var labels = { today: 'today', week: 'this week', month: 'this month', year: 'this year', all: 'all time' };
+
+    switch(period){
+      case 'today': orders = D.orders_today || 0; revenue = D.revenue_today || 0; units = Math.round(orders * 1.37); break;
+      case 'week': orders = D.orders_week || 0; revenue = D.revenue_week || 0; units = Math.round(orders * 1.37); break;
+      case 'month': orders = D.orders_month || 0; revenue = D.revenue_month || 0; units = Math.round(orders * 1.37); break;
+      case 'year': orders = D.orders_alltime || 0; revenue = D.revenue_alltime || 0; units = D.units_alltime || 0; break;
+      default: orders = D.orders_alltime || 0; revenue = D.revenue_alltime || 0; units = D.units_alltime || 0;
+    }
+
+    // --- DASHBOARD ---
+    sv('v-d-orders', fN(orders));
+    sv('v-d-units', fN(units));
+    sv('v-d-revenue', fR(revenue));
+    sv('v-d-due', fM(D.amount_due));
+    sv('v-d-onhand', fN(D.units_on_hand));
+    sv('v-d-paid', fM(D.total_paid));
+    sv('v-d-avg', D.orders_alltime > 0 ? ((D.units_alltime || 0) / (D.orders_alltime || 1)).toFixed(2) : '--');
+    sv('v-d-orders-sub', labels[period] || '');
+    sv('v-sum-orders', fN(D.orders_alltime));
+    sv('v-sum-due', fM(D.amount_due));
+
+    // --- STOCK (Dashboard bars + Inventory Health) ---
+    var br = D.stock_breathease, tx = D.stock_toxin, kd = D.stock_kids;
+
+    if(br != null){
+      var vB = Math.round(br);
+      sv('v-ih-breath', fN(vB));
+      sv('v-ih-breath-s', vB >= 250 ? '✓ Healthy' : '⚠ Low');
+      sv('v-bar-breath', fN(vB) + ' on hand');
+      sv('v-it-breath', fN(vB));
+      sv('v-prod-breath', fN(vB));
+      var dosB = Math.round(br / (572 / 30));
+      sv('v-dos-breath', '~' + dosB + 'd');
+      sv('v-dos-breath-c', vB + ' / (572/30) = ' + dosB + ' days');
+    }
+    if(tx != null){
+      var vT = Math.round(tx);
+      sv('v-ih-toxin', fN(vT));
+      sv('v-ih-toxin-s', vT >= 250 ? '✓ Healthy' : '⚠ Monitor');
+      sv('v-bar-toxin', fN(vT) + ' on hand');
+      sv('v-it-toxin', fN(vT));
+      sv('v-prod-toxin', fN(vT));
+      var dosT = Math.round(tx / (624 / 30));
+      sv('v-dos-toxin', '~' + dosT + 'd');
+      sv('v-dos-toxin-c', vT + ' / (624/30) = ' + dosT + ' days');
+      sv('v-prod-toxin-note', '~' + dosT + ' days supply');
+    }
+    if(kd != null){
+      var vK = Math.round(kd);
+      sv('v-ih-kids', fN(vK));
+      sv('v-ih-kids-s', vK >= 3000 ? '✓ Healthy' : '⚠ Monitor');
+      sv('v-bar-kids', fN(vK) + ' on hand');
+      sv('v-it-kids', fN(vK));
+      sv('v-prod-kids', fN(vK));
+      var dosK = Math.round(kd / (4030 / 30));
+      sv('v-dos-kids', '~' + dosK + 'd');
+      sv('v-dos-kids-c', vK + ' / (4,030/30) = ' + dosK + ' days');
+    }
+
+    // Dynamic bar widths
+    if(br != null && tx != null && kd != null){
+      var mx = Math.max(br, tx, kd, 1);
+      setWidth('v-bar-kids-fill', Math.round(kd / mx * 100));
+      setWidth('v-bar-breath-fill', Math.round(br / mx * 100));
+      setWidth('v-bar-toxin-fill', Math.round(tx / mx * 100));
+    }
+
+    // --- BOXES ---
+    sv('v-d-boxused', fN(D.boxes_used));
+    sv('v-d-boxleft', fN(D.boxes_left));
+    sv('v-d-box7', fN(D.boxes_7));
+    sv('v-d-box30', '30d: ' + fN(D.boxes_30));
+
+    // --- ACCOUNT ---
+    sv('v-a-received', fN(D.units_received));
+    sv('v-a-shipped', fN(D.units_alltime));
+    sv('v-a-adjust', D.adjustments != null ? fM(D.adjustments) : '--');
+    sv('v-a-onhand', fN(D.units_on_hand));
+    sv('v-a-orders', fN(D.orders_alltime));
+    sv('v-a-avg', D.orders_alltime > 0 ? ((D.units_alltime || 0) / (D.orders_alltime || 1)).toFixed(2) : '--');
+    sv('v-a-due', fM(D.amount_due));
+    sv('v-a-charges', fM(D.revenue_alltime));
+    sv('v-a-paid', fM(D.total_paid));
+    sv('v-a-credits', D.adjustments_credits != null ? fM(D.adjustments_credits) : '--');
+
+    // --- ORDERS ---
+    sv('v-o-total', fN(orders));
+    sv('v-o-month', fN(D.orders_month));
+    sv('v-o-charges', fR(D.revenue_month || revenue));
+    sv('v-o-avg', D.orders_alltime > 0 ? ((D.units_alltime || 0) / (D.orders_alltime || 1)).toFixed(2) : '--');
+
+    // --- INVENTORY ---
+    sv('v-i-onhand', fN(D.units_on_hand));
+
+    // --- BILLING ---
+    sv('v-b-total', fM(D.revenue_alltime));
+    sv('v-b-order', fM(D.revenue_alltime));
+    sv('v-b-adjust', D.adjustments_credits != null ? fM(D.adjustments_credits) : '--');
+    sv('v-b-due', fM(D.amount_due));
+    sv('v-b-owed', fM(D.amount_due));
+    sv('v-b-unitsbilled', fN(D.units_billed || D.units_alltime));
+    sv('v-b-ordercharges', fM(D.revenue_alltime));
+    sv('v-b-totalcharges', fM(D.revenue_alltime));
+    sv('v-b-adjustcredits', D.adjustments_credits != null ? fM(D.adjustments_credits) : '--');
+
+    // --- PAYMENTS ---
+    sv('v-p-total', fM(D.total_paid));
+    sv('v-p-remain', fM(D.amount_due));
+
+    // --- PRODUCTS ---
+    sv('v-pr-received', fN(D.units_received));
+
+    // --- INBOUND ---
+    sv('v-in-total', fN(D.units_received));
+  }
+
+  // ===== HELPERS =====
+  function sv(id, val){
+    var el = document.getElementById(id);
+    if(el && val != null) el.textContent = val;
+  }
+
+  function setWidth(id, pct){
+    var el = document.getElementById(id);
+    if(el) el.style.width = pct + '%';
+  }
+
+  function fN(n){
+    if(n == null || isNaN(n)) return '--';
+    return Number(n).toLocaleString();
+  }
+
+  function fM(n){
+    if(n == null || isNaN(n)) return '--';
+    return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function fR(n){
+    if(n == null || isNaN(n)) return '--';
+    return '$' + Math.round(Number(n)).toLocaleString();
+  }
+})();
+</script>
+</body>
+</html>
